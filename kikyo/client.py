@@ -5,8 +5,8 @@ import requests
 import yaml
 
 from kikyo.nsclient.file import FileClient
-from kikyo.nsclient.full_text import FullTextClient
 from kikyo.nsclient.message import MessageClient
+from kikyo.nsclient.search import SearchClient
 from kikyo.settings import Settings
 
 
@@ -15,7 +15,7 @@ class Kikyo:
 
     message: MessageClient
     file: FileClient
-    full_text: FullTextClient
+    search: SearchClient
 
     def __init__(self, settings: dict = None):
         self._init(settings)

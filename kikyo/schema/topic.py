@@ -1,17 +1,15 @@
 from pydantic import BaseModel, Field
 
-from kikyo.schema.filter import FilterableField, FilterableModel
 
-
-class TopicModel(BaseModel, FilterableModel):
+class Topic(BaseModel):
     """
-    定义topic下的数据类型
+    定义topic信息
     """
 
-    __topic_name__: str
+    name: str = Field(
+        title='topic名称',
+    )
 
-
-class TopicField(Field, FilterableField):
-    """
-    定义topic下数据类型的字段
-    """
+    data_model: str = Field(
+        title='topic中的数据模型',
+    )
