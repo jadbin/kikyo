@@ -3,7 +3,7 @@ from abc import ABCMeta
 from kikyo.nsclient import NamespacedClient
 
 
-class MessageClient(NamespacedClient, metaclass=ABCMeta):
+class DataHubClient(NamespacedClient, metaclass=ABCMeta):
     """
-    提供消息队列服务
+    提供数据总线服务
     """

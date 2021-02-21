@@ -4,35 +4,38 @@ import io
 import requests
 import yaml
 
-from kikyo.nsclient.file import FileClient
-from kikyo.nsclient.message import MessageClient
+from kikyo.nsclient.datahub import DataHubClient
+from kikyo.nsclient.files import FilesClient
 from kikyo.nsclient.search import SearchClient
 from kikyo.settings import Settings
 
 
 class Kikyo:
-    settings: Settings
-
-    message: MessageClient
-    file: FileClient
+    datahub: DataHubClient
+    files: FilesClient
     search: SearchClient
 
-    def __init__(self, settings: dict = None):
-        self._init(settings)
+    settings: Settings
+    extensions: dict
 
-    def _init(self, settings):
+    def __init__(self, settings: dict = None):
+        self.init(settings)
+
+    def init(self, settings):
         if settings is None:
             return
-
-        self.settings = None if settings is None else Settings(settings)
+        self.settings = Settings(settings)
 
         if 'access_key' in self.settings and 'secret_key' in self.settings:
             self.login(self.settings['access_key'], self.settings['secret_key'])
 
-    def use_consul_config(
-            self,
-            config_url: str,
-    ) -> 'Kikyo':
+        self._init_extensions()
+
+    def _init_extensions(self):
+        # TODO
+        pass
+
+    def init_by_consul(self, config_url: str) -> 'Kikyo':
         """
         从Consul拉取YAML格式的配置文件
 
@@ -46,7 +49,7 @@ class Kikyo:
         s = base64.b64decode(data)
         settings = yaml.safe_load(io.BytesIO(s))
 
-        self._init(settings)
+        self.init(settings)
         return self
 
     def login(self, access_key: str, secret_key: str):
@@ -55,10 +58,4 @@ class Kikyo:
 
         :param access_key: 用户名
         :param secret_key: 密码
-        :return:
-        """
-
-    def self_space(self):
-        """
-        使用个人空间。
         """

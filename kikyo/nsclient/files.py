@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 from kikyo.nsclient import NamespacedClient
 
 
-class FileClient(NamespacedClient, metaclass=ABCMeta):
+class FilesClient(NamespacedClient, metaclass=ABCMeta):
     """
     提供文件存储服务
     """
