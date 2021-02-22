@@ -33,6 +33,7 @@ install_requires = [
     'pydantic>=1.7.3',
     'PyYAML>=5.4.1',
     'setuptools>=42.0',
+    'requests>=2.25.1',
 ]
 
 

@@ -1,9 +1,11 @@
 import base64
 import io
+from typing import List, Optional
 
 import pkg_resources
 import requests
 import yaml
+from packaging import version
 
 from kikyo.nsclient.datahub import DataHubClient
 from kikyo.nsclient.files import FilesClient
@@ -34,9 +36,6 @@ class Kikyo:
         return self
 
     def _init_plugins(self):
-        plugins_config = self.settings.get('plugins', default={})
-        self._install_plugins(plugins_config)
-
         plugins = {
             entry_point.name: entry_point.load()
             for entry_point in pkg_resources.iter_entry_points('kikyo.plugins')
@@ -53,32 +52,6 @@ class Kikyo:
             if hasattr(plugin, 'configure_kikyo'):
                 plugin.configure_kikyo(self)
 
-    @staticmethod
-    def _install_plugins(config: dict):
-        for name, conf in config.items():
-            pkg = conf.get('package')
-            min_ver = conf.get('min_ver')
-            max_ver = conf.get('max_ver')
-            index_url = conf.get('index_url')
-            install_package(pkg, min_ver=min_ver, max_ver=max_ver, index_url=index_url)
-
-    def init_by_consul(self, config_url: str) -> 'Kikyo':
-        """
-        从Consul拉取YAML格式的配置文件
-
-        :param config_url: 获取配置项的URL地址
-        """
-
-        resp = requests.get(config_url)
-        resp.raise_for_status()
-
-        data = resp.json()[0]['Value']
-        s = base64.b64decode(data)
-        settings = yaml.safe_load(io.BytesIO(s))
-
-        self.init(settings)
-        return self
-
     def login(self, access_key: str, secret_key: str) -> 'Kikyo':
         """
         用户登录
@@ -86,3 +59,33 @@ class Kikyo:
         :param access_key: 用户名
         :param secret_key: 密码
         """
+
+
+def configure_by_consul(config_url: str) -> Kikyo:
+    """
+    从Consul拉取YAML格式的配置文件
+
+    :param config_url: 获取配置项的URL地址
+    """
+
+    resp = requests.get(config_url)
+    resp.raise_for_status()
+
+    ver = pkg_resources.get_distribution('kikyo')
+    since: Optional[str] = None
+    conf = None
+    for data in resp.json():
+        s = base64.b64decode(data['Value'])
+        _conf = yaml.safe_load(io.BytesIO(s))
+        _since = _conf.get('since', default='0.0.0')
+        if since is None or version.parse(ver) >= version.parse(_since) > version.parse(since):
+            since = _since
+            conf = _conf
+
+    plugins: Optional[List[dict]] = conf.get('plugins')
+    if plugins:
+        for kwargs in plugins:
+            install_package(**kwargs)
+
+    settings = conf.get('settings')
+    return Kikyo(settings)
