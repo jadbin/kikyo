@@ -3,27 +3,18 @@ import datetime as dt
 from pydantic import BaseModel, Field
 
 
-class DataMeta(BaseModel):
+class DataModel(BaseModel):
     """
     定义基础数据类型的元信息
     """
 
-    create_time: dt.datetime = Field(
-        default=None,
-        title='数据创建时间',
-    )
+    data_type: str
 
-
-class DataModel(BaseModel):
-    """
-    定义基础数据类型
-    """
-
-    uid: str = Field(
+    data_uid: str = Field(
         title='数据统一标识',
     )
 
-    meta: DataMeta = Field(
+    create_time: dt.datetime = Field(
         default=None,
-        title='数据的元信息'
+        title='数据创建时间',
     )

@@ -1,6 +1,9 @@
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
+from typing import Union
 
 from kikyo.nsclient import NamespacedClient
+from kikyo.nsclient.search.query import Query
+from kikyo.schema.topic import Topic
 
 
 class SearchClient(NamespacedClient, metaclass=ABCMeta):
@@ -8,9 +11,10 @@ class SearchClient(NamespacedClient, metaclass=ABCMeta):
     提供全文检索服务
     """
 
-    def query(self, topic: str):
+    @abstractmethod
+    def query(self, topic: Union[Topic, str]) -> Query:
         """
         对指定topic构建查询。
 
-        :param topic: 数据所在的topic
+        :param topic: topic名称
         """

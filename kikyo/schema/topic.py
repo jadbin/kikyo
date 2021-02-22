@@ -1,4 +1,8 @@
+from typing import Type
+
 from pydantic import BaseModel, Field
+
+from kikyo.schema.data import DataModel
 
 
 class Topic(BaseModel):
@@ -10,6 +14,7 @@ class Topic(BaseModel):
         title='topic名称',
     )
 
-    data_model: str = Field(
-        title='topic中的数据模型',
+    data_model: Type[DataModel] = Field(
+        default=None,
+        title='数据模型',
     )

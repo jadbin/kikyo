@@ -1,8 +1,12 @@
+from abc import ABCMeta, abstractmethod
 from enum import Enum
-from typing import Any
+from typing import Any, Union
 from typing import List
 
 from pydantic import BaseModel
+
+from kikyo.schema.data import DataModel
+from kikyo.schema.topic import Topic
 
 
 class FilterType(Enum):
@@ -22,17 +26,21 @@ class FilterClause(BaseModel):
     value: Any = None
 
 
-class Query:
-    def __init__(self, topic: str):
+class Query(metaclass=ABCMeta):
+    def __init__(self, topic: Union[Topic, str]):
         """
         构建面向topic的查询。
 
-        :param topic: topic的名称
+        :param topic: 数据所在的topic
         """
 
+        self._topic = topic
         self._filters: List[FilterClause] = []
+        self._page = None
+        self._size = None
 
-    def get(self, data_id: str):
+    @abstractmethod
+    def get(self, data_id: str) -> dict:
         """
         返回指定数据
 
@@ -56,12 +64,17 @@ class Query:
         :param size: 分页的大小
         """
 
-    def all(self):
+        self._page = page
+        self._size = size
+
+    @abstractmethod
+    def all(self, as_model=False) -> Union[List[dict], List[DataModel]]:
         """
         返回命中查询的所有数据，默认进行了分页。
         """
 
-    def first(self):
+    @abstractmethod
+    def first(self, as_model=False) -> Union[dict, DataModel]:
         """
         返回命中查询的第一条数据
         """
