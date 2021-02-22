@@ -32,6 +32,7 @@ tests_require = read_requirements('test.txt')
 install_requires = [
     'pydantic>=1.7.3',
     'PyYAML>=5.4.1',
+    'setuptools>=42.0',
 ]
 
 
