@@ -1,4 +1,5 @@
 import base64
+import importlib
 import io
 from typing import List, Optional
 
@@ -27,12 +28,7 @@ class Kikyo:
 
     def init(self, settings) -> 'Kikyo':
         self.settings = Settings(settings)
-
         self._init_plugins()
-
-        if 'access_key' in self.settings and 'secret_key' in self.settings:
-            self.login(self.settings['access_key'], self.settings['secret_key'])
-
         return self
 
     def _init_plugins(self):
@@ -77,7 +73,7 @@ def configure_by_consul(config_url: str) -> Kikyo:
     for data in resp.json():
         s = base64.b64decode(data['Value'])
         _conf = yaml.safe_load(io.BytesIO(s))
-        _since = _conf.get('since', default='0.0.0')
+        _since = _conf.get('since', default='0')
         if since is None or version.parse(ver) >= version.parse(_since) > version.parse(since):
             since = _since
             conf = _conf
@@ -86,6 +82,7 @@ def configure_by_consul(config_url: str) -> Kikyo:
     if plugins:
         for kwargs in plugins:
             install_package(**kwargs)
+    importlib.reload(pkg_resources)
 
     settings = conf.get('settings')
     return Kikyo(settings)
