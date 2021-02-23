@@ -27,4 +27,5 @@ def install_package(pkg: str, min_ver: str = None, max_ver: str = None, index_ur
     cmd.append(f'{pkg}{",".join(ver)}')
     if index_url:
         cmd.extend(['--index-url', index_url])
+        cmd.extend(['--extra-index-url', 'https://pypi.org/simple'])
     pip_main(cmd)

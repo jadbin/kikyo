@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from enum import Enum
 from typing import Union, Any
 
 from kikyo.nsclient import NamespacedClient
@@ -10,6 +9,12 @@ class Producer(metaclass=ABCMeta):
     """
     生产者
     """
+
+    def __enter__(self) -> 'Producer':
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
     @abstractmethod
     def send(self, *records: Any):
@@ -30,6 +35,12 @@ class Consumer(metaclass=ABCMeta):
     消费者
     """
 
+    def __enter__(self) -> 'Consumer':
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
     @abstractmethod
     def receive(self, limit=1) -> Any:
         """
@@ -42,11 +53,6 @@ class Consumer(metaclass=ABCMeta):
         """
         关闭消费者
         """
-
-
-class Cursor(Enum):
-    EARLIEST = 1
-    LATEST = 2
 
 
 class DataHubClient(NamespacedClient, metaclass=ABCMeta):
@@ -67,12 +73,10 @@ class DataHubClient(NamespacedClient, metaclass=ABCMeta):
             self,
             topic: Union[Topic, str],
             subscription_name: str = None,
-            cursor: Any = None,
     ) -> Consumer:
         """
         订阅指定topic
 
         :param topic: topic名称
         :param subscription_name: 订阅的标识
-        :param cursor: 游标位置
         """

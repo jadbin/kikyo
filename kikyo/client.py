@@ -1,23 +1,14 @@
-import base64
-import importlib
-import io
-from typing import List, Optional
-
 import pkg_resources
-import requests
-import yaml
-from packaging import version
 
 from kikyo.nsclient.datahub import DataHubClient
-from kikyo.nsclient.files import FilesClient
+from kikyo.nsclient.objstore import ObjStoreClient
 from kikyo.nsclient.search import SearchClient
 from kikyo.settings import Settings
-from kikyo.utils import install_package
 
 
 class Kikyo:
     datahub: DataHubClient
-    files: FilesClient
+    objstore: ObjStoreClient
     search: SearchClient
 
     settings: Settings
@@ -55,34 +46,3 @@ class Kikyo:
         :param access_key: 用户名
         :param secret_key: 密码
         """
-
-
-def configure_by_consul(config_url: str) -> Kikyo:
-    """
-    从Consul拉取YAML格式的配置文件
-
-    :param config_url: 获取配置项的URL地址
-    """
-
-    resp = requests.get(config_url)
-    resp.raise_for_status()
-
-    ver = pkg_resources.get_distribution('kikyo')
-    since: Optional[str] = None
-    conf = None
-    for data in resp.json():
-        s = base64.b64decode(data['Value'])
-        _conf = yaml.safe_load(io.BytesIO(s))
-        _since = _conf.get('since', default='0')
-        if since is None or version.parse(ver) >= version.parse(_since) > version.parse(since):
-            since = _since
-            conf = _conf
-
-    plugins: Optional[List[dict]] = conf.get('plugins')
-    if plugins:
-        for kwargs in plugins:
-            install_package(**kwargs)
-    importlib.reload(pkg_resources)
-
-    settings = conf.get('settings')
-    return Kikyo(settings)
