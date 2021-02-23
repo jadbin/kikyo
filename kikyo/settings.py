@@ -9,13 +9,11 @@ class Settings(dict):
     def __getitem__(self, name):
         return self.get(name)
 
-    def get_by_prefix(self, prefix, default=None):
+    def deep(self, prefix) -> 'Settings':
         s = prefix.split('.')
         obj = self
         for i in s:
-            if hasattr(obj, i):
-                obj = getattr(obj, i)
-            elif hasattr(obj, '__getitem__') and hasattr(obj, '__contains__'):
+            if isinstance(obj, dict):
                 if i in obj:
                     obj = obj[i]
                 else:
@@ -25,7 +23,7 @@ class Settings(dict):
             if obj is None:
                 break
         if obj is None:
-            return default
+            return Settings()
         return obj
 
     def getbool(self, name, default=None):
