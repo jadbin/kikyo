@@ -5,7 +5,7 @@ Welcome to kikyo |version|
 Overview
 ========
 
-数据湖连接器
+提供数据收集、分组、分析等基础能力。
 
 Table of Contents
 =================

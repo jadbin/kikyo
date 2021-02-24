@@ -1,6 +1,4 @@
-import datetime as dt
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class DataModel(BaseModel):

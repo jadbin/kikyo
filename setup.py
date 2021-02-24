@@ -45,7 +45,7 @@ def main():
         name='kikyo',
         version=read_version(),
         url='https://github.com/jadbin/kikyo',
-        description='A data lake connector',
+        description='Basic ability of data collection, grouping and analysis',
         long_description=long_description,
         author='jadbin',
         author_email='jadbin.com@hotmail.com',

@@ -58,7 +58,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_theme = 'alabaster'
 
 html_theme_options = {
-    'description': 'Unified data delivery',
+    'description': 'Basic ability of data collection, grouping and analysis',
     'font_family': '"Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif',
     'font_size': '14px',
     'code_font_size': '12px',
