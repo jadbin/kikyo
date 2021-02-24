@@ -1,11 +1,17 @@
 import base64
+import importlib
 import io
+from typing import Optional, List
 
+import pkg_resources
 import requests
 import yaml
+from kikyo import Kikyo
+from kikyo.utils import install_package
+from packaging import version
 
 
-def configure_by_consul(config_url: str) -> dict:
+def configure_by_consul(config_url: str) -> Kikyo:
     """
     从Consul拉取YAML格式的配置文件
 
@@ -15,9 +21,28 @@ def configure_by_consul(config_url: str) -> dict:
     resp = requests.get(config_url)
     resp.raise_for_status()
 
-    data = resp.json()[0]
-    s = base64.b64decode(data['Value'])
-    conf = yaml.safe_load(io.BytesIO(s))
+    ver = pkg_resources.get_distribution('kikyo')
+    since: Optional[str] = None
+    conf = None
+    for data in resp.json():
+        v = data['Value']
+        if not v:
+            continue
+        s = base64.b64decode(v)
+        _conf: dict = yaml.safe_load(io.BytesIO(s))
+        _since = _conf.get('since', '0')
+        if since is None or version.parse(ver) >= version.parse(_since) > version.parse(since):
+            since = _since
+            conf = _conf
 
-    settings = conf.get('kikyo')
-    return settings
+    if conf is None:
+        raise RuntimeError('Configuration not found')
+
+    plugins: Optional[List[dict]] = conf.get('plugins')
+    if plugins:
+        for kwargs in plugins:
+            install_package(**kwargs)
+    importlib.reload(pkg_resources)
+
+    settings: dict = conf.get('kikyo')
+    return Kikyo(settings)

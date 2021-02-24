@@ -1,8 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Union, Any
-
-from kikyo.nsclient import NamespacedClient
-from kikyo.schema.topic import Topic
+from typing import Any
 
 
 class Producer(metaclass=ABCMeta):
@@ -24,9 +21,23 @@ class Producer(metaclass=ABCMeta):
         :param records: 数据
         """
 
+    @abstractmethod
     def close(self):
         """
         关闭生产者
+        """
+
+
+class Message(metaclass=ABCMeta):
+    """
+    消息
+    """
+
+    @property
+    @abstractmethod
+    def value(self) -> Any:
+        """
+        消息内容
         """
 
 
@@ -42,26 +53,25 @@ class Consumer(metaclass=ABCMeta):
         self.close()
 
     @abstractmethod
-    def receive(self, limit=1) -> Any:
+    def receive(self) -> Message:
         """
         接收数据
-
-        :param limit: 限制接收数据的数量
         """
 
+    @abstractmethod
     def close(self):
         """
         关闭消费者
         """
 
 
-class DataHubClient(NamespacedClient, metaclass=ABCMeta):
+class DataHubClient(metaclass=ABCMeta):
     """
     提供数据总线服务
     """
 
     @abstractmethod
-    def create_producer(self, topic: Union[Topic, str]) -> Producer:
+    def create_producer(self, topic: str) -> Producer:
         """
         创建向指定topic发送数据的生产者
 
@@ -71,7 +81,7 @@ class DataHubClient(NamespacedClient, metaclass=ABCMeta):
     @abstractmethod
     def subscribe(
             self,
-            topic: Union[Topic, str],
+            topic: str,
             subscription_name: str = None,
     ) -> Consumer:
         """

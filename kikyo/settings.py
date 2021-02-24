@@ -26,6 +26,9 @@ class Settings(dict):
             return Settings()
         return obj
 
+    def get(self, name, default=None):
+        return super().get(name, default)
+
     def getbool(self, name, default=None):
         v = self.get(name, default)
         return getbool(v)

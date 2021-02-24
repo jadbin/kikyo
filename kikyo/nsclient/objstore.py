@@ -1,8 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from typing import Any
 
-from kikyo.nsclient import NamespacedClient
-
 
 class Bucket(metaclass=ABCMeta):
     def __init__(self, name: str):
@@ -26,13 +24,13 @@ class Bucket(metaclass=ABCMeta):
         """
 
 
-class ObjStoreClient(NamespacedClient, metaclass=ABCMeta):
+class ObjStoreClient(metaclass=ABCMeta):
     """
     提供文件存储服务
     """
 
     @abstractmethod
-    def bucket(self, name) -> Bucket:
+    def bucket(self, name: str) -> Bucket:
         """
         获取bucket
 
