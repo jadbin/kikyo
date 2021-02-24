@@ -1,5 +1,6 @@
 import pkg_resources
 
+from kikyo.nsclient.analytic import AnalyticClient
 from kikyo.nsclient.datahub import DataHubClient
 from kikyo.nsclient.objstore import ObjStoreClient
 from kikyo.nsclient.search import SearchClient
@@ -10,6 +11,7 @@ class Kikyo:
     datahub: DataHubClient
     objstore: ObjStoreClient
     search: SearchClient
+    analytic: AnalyticClient
 
     settings: Settings
 
