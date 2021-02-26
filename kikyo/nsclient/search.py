@@ -1,7 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from enum import Enum
-from typing import Any
-from typing import List
+from typing import Any, List
 
 from pydantic import BaseModel
 
@@ -24,45 +23,38 @@ class FilterClause(BaseModel):
 
 
 class Query(metaclass=ABCMeta):
-    def __init__(self, topic: str):
-        """
-        构建面向topic的查询。
+    """
+    构建面向topic的查询
+    """
 
-        :param topic: 数据所在的topic
-        """
+    _filters: List[FilterClause]
 
-        self._topic = topic
-        self._filters: List[FilterClause] = []
-        self._page = None
-        self._size = None
-
-    @abstractmethod
-    def get(self, data_id: str) -> dict:
+    def filter(self, name: str) -> 'FilterBuilder':
         """
-        返回指定数据
-
-        :param data_id: 数据的ID
-        """
-
-    def field(self, name: str) -> 'FilterClauseBuilder':
-        """
-        基于筛选表达式检索数据。
+        基于筛选表达式检索数据
 
         :param name: 筛选的字段名称
         """
 
-        return FilterClauseBuilder(name, self)
+        return FilterBuilder(name, self)
 
-    def paginate(self, page: int = 0, size: int = 10):
+    @abstractmethod
+    def nested(self, name: str, query: 'Query') -> 'Query':
+        """
+        嵌套查询
+
+        :param name: 字段名称
+        :param query: 查询
+        """
+
+    @abstractmethod
+    def paginate(self, page: int = 0, size: int = 10) -> 'Query':
         """
         分页查询
 
         :param page: 分页的页码，从0开始
         :param size: 分页的大小
         """
-
-        self._page = page
-        self._size = size
 
     @abstractmethod
     def all(self, as_model=False) -> List[dict]:
@@ -77,7 +69,7 @@ class Query(metaclass=ABCMeta):
         """
 
 
-class FilterClauseBuilder:
+class FilterBuilder:
     def __init__(self, name: str, query: Query):
         self._name = name
         self._query = query
@@ -159,3 +151,64 @@ class FilterClauseBuilder:
             )
         )
         return self._query
+
+
+class Index(metaclass=ABCMeta):
+    """
+    索引
+    """
+
+    @abstractmethod
+    def exists(self, _id: str) -> bool:
+        """
+        指定ID的数据是否存在
+
+        :param _id: 数据ID
+        """
+
+    @abstractmethod
+    def get(self, _id: str) -> dict:
+        """
+        返回指定数据
+
+        :param _id: 数据的ID
+        """
+
+    @abstractmethod
+    def put(self, _id: str, data: dict):
+        """
+        更新指定数据，指定ID不存在时自动创建数据
+
+        :param _id: 数据ID
+        :param data: 数据内容
+        """
+
+    @abstractmethod
+    def delete(self, _id: str):
+        """
+        删除指定数据
+
+        :param _id: 数据ID
+        """
+
+
+class SearchClient(metaclass=ABCMeta):
+    """
+    提供全文检索服务
+    """
+
+    @abstractmethod
+    def query(self, topic: str) -> Query:
+        """
+        对指定topic构建查询
+
+        :param topic: topic名称
+        """
+
+    @abstractmethod
+    def index(self, topic: str) -> Index:
+        """
+        对指定topic返回索引
+
+        :param topic: topic名称
+        """
