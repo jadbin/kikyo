@@ -30,7 +30,6 @@ class PyTest(TestCommand):
 
 tests_require = read_requirements('test.txt')
 install_requires = [
-    'pydantic>=1.7.3',
     'PyYAML>=5.4.1',
     'packaging',
     'requests>=2.25.1',

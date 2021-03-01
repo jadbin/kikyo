@@ -78,7 +78,7 @@ class Index(metaclass=ABCMeta):
         """
         更新指定数据，指定ID不存在时自动创建数据
 
-        :param _id: 数据ID
+        :param id: 数据ID
         :param data: 数据内容
         """
 
