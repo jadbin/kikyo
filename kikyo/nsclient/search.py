@@ -1,25 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from enum import Enum
-from typing import Any, List
-
-from pydantic import BaseModel
-
-
-class FilterType(Enum):
-    IS = 1
-    IS_NOT = 2
-    IS_ONE_OF = 3
-    IS_NOT_ONE_OF = 4
-    IS_BETWEEN = 5
-    IS_NOT_BETWEEN = 6
-    EXISTS = 7
-    DOES_NOT_EXIST = 8
-
-
-class FilterClause(BaseModel):
-    type: FilterType
-    name: str
-    value: Any = None
+from typing import Any, List, Optional
 
 
 class Query(metaclass=ABCMeta):
@@ -27,16 +7,19 @@ class Query(metaclass=ABCMeta):
     构建面向topic的查询
     """
 
-    _filters: List[FilterClause]
-
-    def filter(self, name: str) -> 'FilterBuilder':
+    @abstractmethod
+    def select(self, name: str) -> 'FilterBuilder':
         """
         基于筛选表达式检索数据
 
         :param name: 筛选的字段名称
         """
 
-        return FilterBuilder(name, self)
+    @abstractmethod
+    def any(self) -> 'FilterBuilder':
+        """
+        面向任意字段筛选数据
+        """
 
     @abstractmethod
     def nested(self, name: str, query: 'Query') -> 'Query':
@@ -63,94 +46,10 @@ class Query(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def first(self, as_model=False) -> dict:
+    def first(self, as_model=False) -> Optional[dict]:
         """
         返回命中查询的第一条数据
         """
-
-
-class FilterBuilder:
-    def __init__(self, name: str, query: Query):
-        self._name = name
-        self._query = query
-
-    def is_(self, value: Any) -> Query:
-        self._query._filters.append(
-            FilterClause(
-                type=FilterType.IS,
-                name=self._name,
-                value=value,
-            )
-        )
-        return self._query
-
-    def is_not(self, value: Any) -> Query:
-        self._query._filters.append(
-            FilterClause(
-                type=FilterType.IS_NOT,
-                name=self._name,
-                value=value
-            )
-        )
-        return self._query
-
-    def is_one_of(self, *values: Any) -> Query:
-        self._query._filters.append(
-            FilterClause(
-                type=FilterType.IS_ONE_OF,
-                name=self._name,
-                value=list(values)
-            )
-        )
-        return self._query
-
-    def is_not_one_of(self, *values: Any) -> Query:
-        self._query._filters.append(
-            FilterClause(
-                type=FilterType.IS_NOT_ONE_OF,
-                name=self._name,
-                value=list(values)
-            )
-        )
-        return self._query
-
-    def is_between(self, lower_bound: Any = None, upper_bound: Any = None) -> Query:
-        self._query._filters.append(
-            FilterClause(
-                type=FilterType.IS_BETWEEN,
-                name=self._name,
-                value=(lower_bound, upper_bound),
-            )
-        )
-        return self._query
-
-    def is_not_between(self, lower_bound: Any = None, upper_bound: Any = None) -> Query:
-        self._query._filters.append(
-            FilterClause(
-                type=FilterType.IS_NOT_BETWEEN,
-                name=self._name,
-                value=(lower_bound, upper_bound),
-            )
-        )
-        return self._query
-
-    def exists(self) -> Query:
-        self._query._filters.append(
-            FilterClause(
-                type=FilterType.EXISTS,
-                name=self._name,
-            )
-        )
-        return self._query
-
-    def does_not_exists(self) -> Query:
-        self._query._filters.append(
-            FilterClause(
-                type=FilterType.DOES_NOT_EXIST,
-                name=self._name,
-            )
-        )
-        return self._query
 
 
 class Index(metaclass=ABCMeta):
@@ -159,23 +58,23 @@ class Index(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def exists(self, _id: str) -> bool:
+    def exists(self, id: str) -> bool:
         """
         指定ID的数据是否存在
 
-        :param _id: 数据ID
+        :param id: 数据ID
         """
 
     @abstractmethod
-    def get(self, _id: str) -> dict:
+    def get(self, id: str) -> dict:
         """
         返回指定数据
 
-        :param _id: 数据的ID
+        :param id: 数据的ID
         """
 
     @abstractmethod
-    def put(self, _id: str, data: dict):
+    def put(self, id: str, data: dict):
         """
         更新指定数据，指定ID不存在时自动创建数据
 
@@ -184,11 +83,69 @@ class Index(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def delete(self, _id: str):
+    def delete(self, id: str):
         """
         删除指定数据
 
-        :param _id: 数据ID
+        :param id: 数据ID
+        """
+
+
+class FilterBuilder(metaclass=ABCMeta):
+    @abstractmethod
+    def is_(self, value: Any) -> Query:
+        """
+        是某个值
+        :param value: 具体值
+        """
+
+    @abstractmethod
+    def is_not(self, value: Any) -> Query:
+        """
+        不是某个值
+        :param value: 具体值
+        """
+
+    @abstractmethod
+    def is_one_of(self, *values: Any) -> Query:
+        """
+        是其中某个值
+        :param values: 具体值的列表
+        """
+
+    @abstractmethod
+    def is_not_one_of(self, *values: Any) -> Query:
+        """
+        不是是其中某个值
+        :param values: 具体值的列表
+        """
+
+    @abstractmethod
+    def is_between(self, lower_bound: Any = None, upper_bound: Any = None) -> Query:
+        """
+        在区间范围内
+        :param lower_bound: 最低值
+        :param upper_bound: 最高值
+        """
+
+    @abstractmethod
+    def is_not_between(self, lower_bound: Any = None, upper_bound: Any = None) -> Query:
+        """
+        不在区间范围内
+        :param lower_bound: 最低值
+        :param upper_bound: 最高值
+        """
+
+    @abstractmethod
+    def exists(self) -> Query:
+        """
+        字段存在记录
+        """
+
+    @abstractmethod
+    def does_not_exists(self) -> Query:
+        """
+        字段不存在记录
         """
 
 
