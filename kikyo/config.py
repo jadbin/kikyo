@@ -6,9 +6,10 @@ from typing import Optional, List
 import pkg_resources
 import requests
 import yaml
+from packaging import version
+
 from kikyo import Kikyo
 from kikyo.utils import install_package
-from packaging import version
 
 
 def configure_by_consul(config_url: str) -> Kikyo:
@@ -21,7 +22,7 @@ def configure_by_consul(config_url: str) -> Kikyo:
     resp = requests.get(config_url)
     resp.raise_for_status()
 
-    ver = pkg_resources.get_distribution('kikyo')
+    ver = pkg_resources.get_distribution('kikyo').version
     since: Optional[str] = None
     conf = None
     for data in resp.json():
@@ -31,6 +32,7 @@ def configure_by_consul(config_url: str) -> Kikyo:
         s = base64.b64decode(v)
         _conf: dict = yaml.safe_load(io.BytesIO(s))
         _since = _conf.get('since', '0')
+
         if since is None or version.parse(ver) >= version.parse(_since) > version.parse(since):
             since = _since
             conf = _conf
