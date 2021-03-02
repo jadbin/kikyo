@@ -42,8 +42,7 @@ class Kikyo:
                 plugin.configure_kikyo(self)
 
     def login(self, access_key: str, secret_key: str) -> 'Kikyo':
-        """
-        用户登录
+        """用户登录
 
         :param access_key: 用户名
         :param secret_key: 密码

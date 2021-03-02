@@ -13,8 +13,7 @@ from kikyo.utils import install_package
 
 
 def configure_by_consul(config_url: str) -> Kikyo:
-    """
-    从Consul拉取YAML格式的配置文件
+    """从Consul拉取YAML格式的配置文件
 
     :param config_url: 获取配置项的URL地址
     """

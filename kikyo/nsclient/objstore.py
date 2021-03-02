@@ -8,16 +8,14 @@ class Bucket(metaclass=ABCMeta):
 
     @abstractmethod
     def get_object_link(self, key: str) -> str:
-        """
-        获取文件的下载链接
+        """获取文件的下载链接
 
         :param key: 文件的名称
         """
 
     @abstractmethod
     def put_object(self, key: str, data: Any):
-        """
-        上传文件
+        """上传文件
 
         :param key: 文件的名称
         :param data: 文件数据
@@ -25,14 +23,12 @@ class Bucket(metaclass=ABCMeta):
 
 
 class ObjStoreClient(metaclass=ABCMeta):
-    """
-    提供文件存储服务
+    """提供文件存储服务
     """
 
     @abstractmethod
     def bucket(self, name: str) -> Bucket:
-        """
-        获取bucket
+        """获取bucket
 
         :param name: bucket名称
         """
