@@ -35,13 +35,18 @@ class Query(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def all(self, as_model=False) -> List[dict]:
+    def all(self) -> List[dict]:
         """返回命中查询的所有数据，默认进行了分页。
         """
 
     @abstractmethod
-    def first(self, as_model=False) -> Optional[dict]:
+    def first(self) -> Optional[dict]:
         """返回命中查询的第一条数据
+        """
+
+    @abstractmethod
+    def count(self) -> int:
+        """返回命中查询的数据量
         """
 
 
