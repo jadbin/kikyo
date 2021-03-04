@@ -36,6 +36,10 @@ def configure_by_consul(config_url: str) -> Kikyo:
             since = _since
             conf = _conf
 
+    return _configure(conf)
+
+
+def _configure(conf: Optional[dict]) -> Kikyo:
     if conf is None:
         raise RuntimeError('Configuration not found')
 
