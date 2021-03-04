@@ -1,5 +1,6 @@
 import pkg_resources
 
+from kikyo.acl import AclService
 from kikyo.nsclient.analytic import AnalyticClient
 from kikyo.nsclient.datahub import DataHubClient
 from kikyo.nsclient.objstore import ObjStoreClient
@@ -13,6 +14,7 @@ class Kikyo:
     search: SearchClient
     analytic: AnalyticClient
 
+    acl: AclService
     settings: Settings
 
     def __init__(self, settings: dict = None):
@@ -47,3 +49,5 @@ class Kikyo:
         :param access_key: 用户名
         :param secret_key: 密码
         """
+        self.acl.login(access_key, secret_key)
+        return self
