@@ -30,9 +30,6 @@ class PyTest(TestCommand):
 
 tests_require = read_requirements('test.txt')
 install_requires = [
-    'PyYAML>=5.4.1',
-    'packaging',
-    'requests>=2.25.1',
 ]
 
 
@@ -62,7 +59,7 @@ def main():
             'Programming Language :: Python',
             'Programming Language :: Python :: 3',
             'Topic :: Software Development :: Libraries :: Python Modules',
-        ]
+        ],
     )
 
 
