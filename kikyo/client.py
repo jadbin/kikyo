@@ -1,30 +1,27 @@
 import pkg_resources
 
-from kikyo.acl import AclService
-from kikyo.nsclient.analytic import AnalyticClient
-from kikyo.nsclient.datahub import DataHubClient
-from kikyo.nsclient.objstore import ObjStoreClient
-from kikyo.nsclient.search import SearchClient
+from kikyo.analytic import Analytic
+from kikyo.datahub import DataHub
+from kikyo.objstore import ObjStore
+from kikyo.search import Search
 from kikyo.settings import Settings
 
 
 class Kikyo:
-    datahub: DataHubClient
-    objstore: ObjStoreClient
-    search: SearchClient
-    analytic: AnalyticClient
+    datahub: DataHub
+    objstore: ObjStore
+    search: Search
+    analytic: Analytic
 
-    acl: AclService
     settings: Settings
 
-    def __init__(self, settings: dict = None):
-        if settings is not None:
-            self.init(settings)
+    def __init__(self, _settings: dict = None, **kwargs):
+        self.settings = Settings(_settings)
+        self.settings.merge(kwargs)
+        self._init()
 
-    def init(self, settings) -> 'Kikyo':
-        self.settings = Settings(settings)
+    def _init(self):
         self._init_plugins()
-        return self
 
     def _init_plugins(self):
         plugins = {
@@ -42,12 +39,3 @@ class Kikyo:
         for name, plugin in plugins.items():
             if hasattr(plugin, 'configure_kikyo'):
                 plugin.configure_kikyo(self)
-
-    def login(self, access_key: str, secret_key: str) -> 'Kikyo':
-        """用户登录
-
-        :param access_key: 用户名
-        :param secret_key: 密码
-        """
-        self.acl.login(access_key, secret_key)
-        return self

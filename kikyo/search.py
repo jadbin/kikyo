@@ -131,32 +131,29 @@ class FilterBuilder(metaclass=ABCMeta):
 
     @abstractmethod
     def exists(self) -> Query:
-        """字段存在记录
+        """字段存在
         """
 
     @abstractmethod
     def does_not_exists(self) -> Query:
-        """字段不存在记录
+        """字段不存在
         """
 
 
-class SearchClient(metaclass=ABCMeta):
-    """
-    提供全文检索服务
+class Search(metaclass=ABCMeta):
+    """提供全文检索服务
     """
 
     @abstractmethod
     def query(self, topic: str) -> Query:
-        """
-        对指定topic构建查询
+        """对指定topic构建查询
 
         :param topic: topic名称
         """
 
     @abstractmethod
     def index(self, topic: str) -> Index:
-        """
-        对指定topic返回索引
+        """对指定topic返回索引
 
         :param topic: topic名称
         """

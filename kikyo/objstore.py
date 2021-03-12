@@ -22,7 +22,7 @@ class Bucket(metaclass=ABCMeta):
         """
 
 
-class ObjStoreClient(metaclass=ABCMeta):
+class ObjStore(metaclass=ABCMeta):
     """提供文件存储服务
     """
 

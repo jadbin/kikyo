@@ -58,7 +58,7 @@ class Consumer(metaclass=ABCMeta):
         """
 
 
-class DataHubClient(metaclass=ABCMeta):
+class DataHub(metaclass=ABCMeta):
     """提供数据总线服务
     """
 
