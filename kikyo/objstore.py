@@ -3,8 +3,6 @@ from typing import Any
 
 
 class Bucket(metaclass=ABCMeta):
-    def __init__(self, name: str):
-        self._name = name
 
     @abstractmethod
     def get_object_link(self, key: str) -> str:
