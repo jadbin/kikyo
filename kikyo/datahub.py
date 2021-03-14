@@ -64,6 +64,14 @@ class Consumer(metaclass=ABCMeta):
         关闭消费者
         """
 
+    @abstractmethod
+    def ack(self, msg: Message):
+        """
+        确认消息
+
+        :param msg: 消息
+        """
+
 
 class DataHub(metaclass=ABCMeta):
     """
@@ -83,10 +91,12 @@ class DataHub(metaclass=ABCMeta):
             self,
             topic: str,
             subscription_name: str = None,
+            auto_ack: bool = True,
     ) -> Consumer:
         """
         订阅指定topic
 
         :param topic: topic名称
         :param subscription_name: 订阅的标识
+        :param auto_ack: 自动确认
         """
