@@ -8,7 +8,7 @@ class Query(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def select(self, name: str) -> 'FilterBuilder':
+    def where(self, name: str) -> 'FilterBuilder':
         """
         基于筛选表达式检索数据
 
