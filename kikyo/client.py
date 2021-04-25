@@ -1,17 +1,15 @@
 import pkg_resources
 
-from kikyo.analytic import Analytic
 from kikyo.datahub import DataHub
-from kikyo.objstore import ObjStore
+from kikyo.oss import OSS
 from kikyo.search import Search
 from kikyo.settings import Settings
 
 
 class Kikyo:
     datahub: DataHub
-    objstore: ObjStore
+    oss: OSS
     search: Search
-    analytic: Analytic
 
     settings: Settings
 

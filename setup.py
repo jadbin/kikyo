@@ -40,8 +40,7 @@ def main():
     setup(
         name='kikyo',
         version=read_version(),
-        url='https://github.com/jadbin/kikyo',
-        description='Basic ability of data collection, grouping and analysis',
+        description='kikyo package',
         long_description=long_description,
         author='jadbin',
         author_email='jadbin.com@hotmail.com',

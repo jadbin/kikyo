@@ -1,7 +1,6 @@
 include README.rst
 include LICENSE
 graft kikyo
-graft docs
 graft tests
 graft requirements
 global-exclude *.pyc
