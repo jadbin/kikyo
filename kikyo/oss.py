@@ -21,6 +21,15 @@ class Bucket(metaclass=ABCMeta):
         :param data: 对象数据
         """
 
+    @abstractmethod
+    def get_object(self, key: str) -> Any:
+        """
+        下载对象
+
+        :param key: 对象的名称
+        :return: 对象数据
+        """
+
 
 class OSS(metaclass=ABCMeta):
     """
